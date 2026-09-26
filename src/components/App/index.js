@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet';
 import queryString from 'query-string';
 import {
   BaseComponent,
+  Button,
   CodeEditor,
   Header,
   Navigator,
@@ -14,6 +15,9 @@ import {
   ToastContainer,
   VisualizationViewer,
 } from 'components';
+import faChevronLeft from '@fortawesome/fontawesome-free-solid/faChevronLeft';
+import faChevronRight from '@fortawesome/fontawesome-free-solid/faChevronRight';
+import faTimes from '@fortawesome/fontawesome-free-solid/faTimes';
 import { AlgorithmApi, GitHubApi, VisualizationApi } from 'apis';
 import { actions } from 'reducers';
 import { createUserFile, extension, refineGist } from 'common/util';
@@ -26,6 +30,7 @@ class App extends BaseComponent {
     super(props);
 
     this.state = {
+      isStudio: false,
       workspaceVisibles: [true, true, true],
       workspaceWeights: [1, 2, 2],
     };
@@ -36,11 +41,14 @@ class App extends BaseComponent {
     this.handleClickTitleBar = this.handleClickTitleBar.bind(this);
     this.loadScratchPapers = this.loadScratchPapers.bind(this);
     this.handleChangeWorkspaceWeights = this.handleChangeWorkspaceWeights.bind(this);
+    this.toggleStudio = this.toggleStudio.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
   }
 
   componentDidMount() {
     window.signIn = this.signIn.bind(this);
     window.signOut = this.signOut.bind(this);
+    window.addEventListener('keydown', this.handleKeyDown);
 
     const { params } = this.props.match;
     const { search } = this.props.location;
@@ -59,6 +67,7 @@ class App extends BaseComponent {
   componentWillUnmount() {
     delete window.signIn;
     delete window.signOut;
+    window.removeEventListener('keydown', this.handleKeyDown);
 
     this.toggleHistoryBlock(false);
   }
@@ -209,32 +218,108 @@ class App extends BaseComponent {
     this.codeEditorRef.current.handleResize();
   }
 
-  toggleNavigatorOpened(navigatorOpened = !this.state.workspaceVisibles[0]) {
-    const workspaceVisibles = [...this.state.workspaceVisibles];
-    workspaceVisibles[0] = navigatorOpened;
-    this.setState({ workspaceVisibles });
+  toggleStudio(isStudio = !this.state.isStudio) {
+    const workspaceVisibles = isStudio ? [false, true, true] : [true, true, true];
+    const workspaceWeights = isStudio ? [0, 1, 1] : [1, 2, 2];
+    this.setState({ isStudio, workspaceVisibles, workspaceWeights }, () => {
+      if (this.codeEditorRef.current) {
+        this.codeEditorRef.current.handleResize();
+      }
+    });
   }
 
-  handleClickTitleBar() {
-    this.toggleNavigatorOpened();
+  handleKeyDown(e) {
+    const activeTag = document.activeElement ? document.activeElement.tagName : '';
+    const isInput = ['INPUT', 'TEXTAREA'].includes(activeTag) || (document.activeElement && document.activeElement.classList.contains('ace_text-input'));
+    if (isInput) return;
+
+    if (e.key === 'Escape' && this.state.isStudio) {
+      this.toggleStudio(false);
+      return;
+    }
+    if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey) {
+      this.toggleStudio();
+      return;
+    }
+    if (e.key === ' ' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      this.stepNext();
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      this.stepPrev();
+    }
+  }
+
+  stepNext() {
+    const { cursor, chunks } = this.props.player;
+    if (cursor < chunks.length) {
+      this.props.setCursor(cursor + 1);
+    }
+  }
+
+  stepPrev() {
+    const { cursor } = this.props.player;
+    if (cursor > 1) {
+      this.props.setCursor(cursor - 1);
+    }
+  }
+
+  renderStudioHeader() {
+    const { titles } = this.props.current;
+    const { cursor, chunks } = this.props.player;
+    const total = chunks.length;
+
+    return (
+      <header className={styles.studio_header}>
+        <div className={styles.studio_left}>
+          <div className={styles.studio_badge}>&lt;/&gt; CỐT ĐÊ</div>
+          <div className={styles.studio_title}>
+            {titles.join(' ➔ ')}
+          </div>
+        </div>
+        <div className={styles.studio_center}>
+          <Button icon={faChevronLeft} primary disabled={cursor <= 1} onClick={() => this.stepPrev()}>
+            Lùi
+          </Button>
+          <div className={styles.studio_counter}>
+            Bước <strong>{cursor}</strong> / {total}
+          </div>
+          <Button icon={faChevronRight} reverse primary disabled={cursor >= total} onClick={() => this.stepNext()}>
+            Tiếp
+          </Button>
+          <div className={styles.studio_hint}>
+            ⌨ <code>Space / →</code> Tiếp | <code>←</code> Lùi
+          </div>
+        </div>
+        <div className={styles.studio_right}>
+          <Button icon={faTimes} primary onClick={() => this.toggleStudio(false)}>
+            Thoát Studio (Esc)
+          </Button>
+        </div>
+      </header>
+    );
   }
 
   render() {
-    const { workspaceVisibles, workspaceWeights } = this.state;
+    const { workspaceVisibles, workspaceWeights, isStudio } = this.state;
     const { titles, description, saved } = this.props.current;
 
     const title = `${saved ? '' : '(Unsaved) '}${titles.join(' - ')}`;
     const [navigatorOpened] = workspaceVisibles;
 
     return (
-      <div className={styles.app}>
+      <div className={`${styles.app} ${isStudio ? styles.studio_mode : ''}`}>
         <Helmet>
           <title>{title}</title>
           <meta name="description" content={description}/>
         </Helmet>
-        <Header className={styles.header} onClickTitleBar={this.handleClickTitleBar}
-                navigatorOpened={navigatorOpened} loadScratchPapers={this.loadScratchPapers}
-                ignoreHistoryBlock={this.ignoreHistoryBlock}/>
+        {
+          isStudio ?
+            this.renderStudioHeader() :
+            <Header className={styles.header} onClickTitleBar={this.handleClickTitleBar}
+                    navigatorOpened={navigatorOpened} loadScratchPapers={this.loadScratchPapers}
+                    ignoreHistoryBlock={this.ignoreHistoryBlock} onToggleStudio={() => this.toggleStudio(true)}/>
+        }
         <ResizableContainer className={styles.workspace} horizontal weights={workspaceWeights}
                             visibles={workspaceVisibles} onChangeWeights={this.handleChangeWorkspaceWeights}>
           <Navigator/>
@@ -249,6 +334,6 @@ class App extends BaseComponent {
   }
 }
 
-export default connect(({ current, env }) => ({ current, env }), actions)(
+export default connect(({ current, env, player }) => ({ current, env, player }), actions)(
   App,
 );

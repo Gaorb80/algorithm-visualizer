@@ -15,6 +15,7 @@ import faTrashAlt from '@fortawesome/fontawesome-free-solid/faTrashAlt';
 import faSave from '@fortawesome/fontawesome-free-solid/faSave';
 import faFacebook from '@fortawesome/fontawesome-free-brands/faFacebook';
 import faStar from '@fortawesome/fontawesome-free-solid/faStar';
+import faDesktop from '@fortawesome/fontawesome-free-solid/faDesktop';
 import { GitHubApi } from 'apis';
 import { classes, refineGist } from 'common/util';
 import { actions } from 'reducers';
@@ -143,6 +144,8 @@ class Header extends BaseComponent {
             }
             <Button icon={faFacebook} primary
                     href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}>Share</Button>
+            <Button icon={faDesktop} primary className={styles.btn_studio}
+                    onClick={this.props.onToggleStudio}>🎬 Studio Giảng Dạy (F)</Button>
             <Button icon={faExpandArrowsAlt} primary
                     onClick={() => this.handleClickFullScreen()}>Fullscreen</Button>
           </div>
