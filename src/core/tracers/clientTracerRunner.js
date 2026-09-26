@@ -122,11 +122,18 @@ export const runClientTracerCode = (code) => {
     },
   };
 
+  class LinkedListTracer extends BaseTracerMock {
+    constructor(title = 'LinkedListTracer') {
+      super('LinkedListTracer', title);
+    }
+  }
+
   const sandboxContext = {
     Array1DTracer,
     Array2DTracer,
     ChartTracer,
     GraphTracer,
+    LinkedListTracer,
     LogTracer,
     MarkdownTracer,
     ScatterTracer,

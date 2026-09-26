@@ -1,0 +1,230 @@
+@import "~common/stylesheet/index";
+
+.linked_list_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  overflow: auto;
+  padding: 30px 20px;
+  background-color: #0d1117;
+  user-select: none;
+}
+
+.stage_wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 20px 40px 20px;
+  margin: auto;
+}
+
+.svg_layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  overflow: visible;
+}
+
+.nodes_row {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  position: relative;
+  z-index: 10;
+}
+
+.node_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 108px;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  flex-shrink: 0;
+
+  &.detached {
+    transform: translateY(32px);
+  }
+
+  &.fading_out {
+    opacity: 0;
+    transform: translateY(40px) scale(0.85);
+  }
+}
+
+.pointer_top {
+  height: 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  margin-bottom: 6px;
+  width: 100%;
+}
+
+.pointer_badge_group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pointer_badge {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: -0.02em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+
+  &.badge_dau {
+    background: #064e3b;
+    color: #6ee7b7;
+    border: 1px solid #059669;
+  }
+
+  &.badge_cuoi {
+    background: #312e81;
+    color: #c7d2fe;
+    border: 1px solid #4f46e5;
+  }
+
+  &.badge_p {
+    background: #78350f;
+    color: #fde68a;
+    border: 1px solid #d97706;
+  }
+
+  &.badge_q {
+    background: #7f1d1d;
+    color: #fca5a5;
+    border: 1px solid #dc2626;
+  }
+}
+
+.pointer_arrow {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid #94a3b8;
+}
+
+/* Node Box Anatomy */
+.node_card {
+  width: 100%;
+  background: #161b22;
+  border: 1.5px solid #30363d;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.focus {
+    border-color: #d97706;
+    box-shadow: 0 0 12px rgba(217, 119, 6, 0.4);
+    transform: scale(1.02);
+  }
+
+  &.target {
+    border-color: #dc2626;
+    box-shadow: 0 0 12px rgba(220, 38, 38, 0.4);
+    transform: scale(1.02);
+  }
+
+  &.isolated {
+    border: 1.5px dashed #dc2626;
+    background: rgba(220, 38, 38, 0.08);
+  }
+}
+
+.node_header {
+  background: #0d1117;
+  padding: 3px 6px;
+  font-size: 10px;
+  color: #8b949e;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #21262d;
+}
+
+.node_body {
+  display: flex;
+  height: 38px;
+}
+
+.cell_data {
+  flex: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #f0f6fc;
+  border-right: 1px solid #21262d;
+  background: #161b22;
+  font-variant-numeric: tabular-nums;
+}
+
+.cell_ptr {
+  flex: 0.9;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  color: #8b949e;
+  background: #0d1117;
+  font-weight: 600;
+}
+
+.cell_prev {
+  flex: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  color: #8b949e;
+  background: #0d1117;
+  border-right: 1px solid #21262d;
+}
+
+.node_address {
+  margin-top: 5px;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  color: #484f58;
+  font-weight: 500;
+}
+
+.null_terminator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  background: #161b22;
+  border: 1px dashed #30363d;
+  border-radius: 4px;
+  color: #6e7681;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
