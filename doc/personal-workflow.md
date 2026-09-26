@@ -25,33 +25,88 @@ Dự án fork này được thiết kế tối ưu cho nhu cầu học tập, ng
 
 ---
 
-## 2. Cách Tạo & Lưu Trữ Bài Thuật Toán Cá Nhân
+## 2. Hướng Dẫn Mở & Xem Các Bài Mô Phỏng DSA Hiện Có
 
-### Cách 1: Sử dụng Scratch Paper (Lưu qua GitHub Gist)
-1. Trên thanh menu trên cùng, bấm vào biểu tượng **GitHub Sign In** để liên kết tài khoản GitHub của bạn.
-2. Chọn menu **Scratch Paper** $\rightarrow$ **New**.
-3. Đặt tên bài tập, tạo các file `.js`, `.md` (ghi chú giải thích thuật toán).
-4. Nhấn **Save** hoặc **Fork**. Bài tập của bạn sẽ được lưu tự động thành một **Secret/Public Gist** trên tài khoản GitHub cá nhân.
-5. Khi mở lại trang web, toàn bộ danh sách Gist thuật toán của bạn sẽ xuất hiện tại mục Scratch Paper.
+### Bước 1: Khởi động ứng dụng
+```powershell
+cd E:\GitHub\algorithm-visualizer
+npm start
+```
+Trình duyệt sẽ tự động mở trang web tại địa chỉ `http://localhost:3000`.
 
-### Cách 2: Thêm trực tiếp bài mẫu vào mã nguồn nội bộ
-Nếu bạn muốn đóng gói các bài toán mẫu cứng vào trong project:
-1. Thư mục `src/files/` chứa các skeleton và template mặc định:
-   - `src/files/skeletons/code.js`: Code khung JavaScript mặc định khi tạo bài mới.
-   - `src/files/skeletons/code.cpp`: Code khung C++ mặc định.
-   - `src/files/skeletons/code.java`: Code khung Java mặc định.
-2. Bạn có thể tùy biến các skeleton này với các thư viện helper cá nhân hoặc dữ liệu mẫu mà bạn thường xuyên sử dụng.
+### Bước 2: Truy cập bài học qua thanh điều hướng (Navigator)
+1. Ở góc trái màn hình, bấm vào biểu tượng hoặc thanh tiêu đề để mở danh mục bài học.
+2. Bạn sẽ thấy mục đầu tiên: **`DSA - Danh Sách Liên Kết (HDU)`**.
+3. Bấm chọn bài học:
+   - **`DS Liên Kết Đơn (xoaDau, xoaCuoi, xoaViTriK)`**: URL trực tiếp `http://localhost:3000/dsa-linked-list/singly-linked-list-deletion`
+   - **`DS Liên Kết Đôi (xoaDau, xoaCuoi, xoaViTriK)`**: URL trực tiếp `http://localhost:3000/dsa-linked-list/doubly-linked-list-deletion`
+
+### Bước 3: Điều khiển chuyển động (Player)
+- Bấm **Play** (hoặc phím cách) để xem tự động.
+- Sử dụng các nút **Next (>)** / **Prev (<)** để tua từng bước dòng code C++.
+- Kéo thanh trượt **Speed** để tăng/giảm tốc độ hoạt ảnh.
+- Khung **Nhật ký (Log)** ở dưới sẽ in chi tiết từng dòng lệnh C++ tương ứng (`p = L.dau`, `delete p;`...).
 
 ---
 
-## 3. Mẹo Thiết Kế Thuật Toán Trực Quan Đẹp & Rõ Ràng
+## 3. Đánh Giá Kiến Trúc Quản Lý File & Quy Chuẩn Mở Rộng Tương Lai (Scalability)
 
-1. **Phối hợp `Array1DTracer` + `ChartTracer`**:
-   - Luôn gọi `arrayTracer.chart(chartTracer)` cho các thuật toán Sort để vừa thấy giá trị số vừa thấy độ cao trực quan của các thanh cột.
+Cấu trúc file hiện tại đã được thiết kế theo mô hình **Module Hóa (Modular Content Architecture)**, hoàn toàn sẵn sàng và cực kỳ thuận tiện để bạn mở rộng thêm hàng chục bài học mới cho toàn bộ chương trình DSA (Cây nhị phân, Stack/Queue, Đồ thị, Quy hoạch động, Sắp xếp).
+
+### 📁 Cấu trúc thư mục chuẩn đề xuất (`src/files/dsa/`):
+
+```text
+src/files/dsa/
+├── 01-linked-list/                     # Chuyên đề 1: Danh sách liên kết
+│   ├── singly-linked-list/             # code.js, README.md (Thao tác xóa DS đơn)
+│   ├── doubly-linked-list/             # code.js, README.md (Thao tác xóa DS đôi)
+│   └── insertion-operations/           # code.js, README.md (Thao tác thêm đầu/cuối/vị trí K)
+├── 02-stack-queue/                     # Chuyên đề 2: Ngăn xếp & Hàng đợi
+│   ├── stack-array-linked/             # Push, Pop, Peek
+│   └── queue-circular/                 # Enqueue, Dequeue
+├── 03-trees-and-bst/                   # Chuyên đề 3: Cây & Cây tìm kiếm nhị phân
+│   ├── bst-insert-search/              # Thêm, tìm kiếm trên BST
+│   └── bst-deletion/                   # Xóa nút trên BST (Nút lá, 1 con, 2 con)
+└── 04-sorting/                         # Chuyên đề 4: Thuật toán sắp xếp
+    ├── bubble-sort/
+    ├── quick-sort/
+    └── merge-sort/
+```
+
+### ⚡ Quy trình 3 bước để thêm 1 bài học DSA mới vào hệ thống:
+
+#### Bước 1: Tạo thư mục bài học trong `src/files/dsa-hdu/` (hoặc `src/files/dsa/`)
+Tạo 2 file:
+- `code.js`: Kịch bản điều khiển Tracer (`LinkedListTracer`, `Array1DTracer`, `GraphTracer`...).
+- `README.md`: Ghi chú lý thuyết, công thức, phân tích độ phức tạp $O(N)$ bằng tiếng Việt.
+
+#### Bước 2: Đăng ký tệp trong [`src/files/index.js`](file:///E:/GitHub/algorithm-visualizer/src/files/index.js)
+```javascript
+export const DSA_BST_INSERT_JS = readUserFile('dsa-hdu/bst-insert/code.js');
+export const DSA_BST_INSERT_MD = readProjectFile('dsa-hdu/bst-insert/README.md');
+```
+
+#### Bước 3: Khai báo vào danh mục trong [`src/apis/index.js`](file:///E:/GitHub/algorithm-visualizer/src/apis/index.js)
+Thêm bài mới vào `LOCAL_DSA_CATEGORY` và `LOCAL_DSA_ALGORITHMS`:
+```javascript
+{
+  key: 'bst-insert',
+  name: 'Cây BST - Chèn & Tìm Kiếm',
+}
+```
+Ngay lập tức, bài học mới sẽ xuất hiện trên thanh Navigator bên trái và hoạt động 100% offline!
+
+---
+
+## 4. Mẹo Thiết Kế Thuật Toán Trực Quan Đẹp & Rõ Ràng
+
+1. **Chọn Tracer phù hợp với cấu trúc dữ liệu**:
+   - **Danh sách liên kết**: Dùng `LinkedListTracer` (vẽ hộp 2/3 ngăn, địa chỉ hex, mũi tên 2 chiều, bắc cầu).
+   - **Mảng & Sắp xếp**: Dùng `Array1DTracer` + `ChartTracer` (`arrayTracer.chart(chartTracer)`).
+   - **Đồ thị & Cây**: Dùng `GraphTracer` (`tracer.layoutTree(root)` hoặc `tracer.layoutCircle()`).
+   - **Ma trận & Quy hoạch động (DP)**: Dùng `Array2DTracer`.
 2. **Luôn dùng `Tracer.delay(lineNumber)` sau mỗi bước biến đổi**:
-   - Nếu bạn thực hiện `select()`, `patch()`, `deselect()` liên tiếp mà không có `Tracer.delay()`, người xem sẽ không nhìn thấy bước trung gian đó vì chúng bị gộp chung vào 1 frame (chunk).
-3. **Kết hợp `LogTracer` và `MarkdownTracer`**:
-   - `MarkdownTracer` đặt ở trên cùng để giải thích ý tưởng cốt lõi và độ phức tạp $O(N)$.
-   - `LogTracer` đặt ở dưới cùng để in chi tiết từng phép so sánh hoặc giá trị biến phụ trong vòng lặp.
-4. **Tránh vòng lặp vô tận**:
-   - Giới hạn kích thước mảng thử nghiệm từ 5 đến 30 phần tử để tránh sinh ra hàng nghìn chunks làm trình duyệt bị giật lag.
+   - Giúp Ace Editor highlight đúng dòng code C++ và phân tách các bước thành từng frame chuyển động.
+3. **Kết hợp `LogTracer`**:
+   - In rõ ràng tên biến, con trỏ và giải thích hành động để người học dễ theo dõi.
+
