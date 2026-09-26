@@ -19,7 +19,7 @@ class LinkedListRenderer extends Renderer {
   }
 
   renderSvgLinks() {
-    const { nodes = [], bypass, prevBypass } = this.props.data;
+    const { nodes = [], isDoubly = false, bypass, prevBypass } = this.props.data;
     if (!nodes.length) return null;
 
     const nodeWidth = 108;
@@ -37,15 +37,50 @@ class LinkedListRenderer extends Renderer {
       if (curr.detached || next.detached || curr.fadingOut || next.fadingOut) continue;
 
       const x1 = startX + i * totalNodeSlot + nodeWidth - 6;
-      const y1 = centerY;
       const x2 = startX + (i + 1) * totalNodeSlot + 4;
-      const y2 = centerY;
 
-      lines.push(
-        <g key={`link_${curr.id}_${next.id}`}>
-          <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#58a6ff" strokeWidth="2" markerEnd="url(#arrow_head)" />
-        </g>
-      );
+      if (isDoubly) {
+        // Parallel 2-directional arrows for Doubly Linked List:
+        // 1. Top arrow (sau): points from curr to next ->
+        // 2. Bottom arrow (truoc): points from next to curr <-
+        lines.push(
+          <g key={`doubly_link_${curr.id}_${next.id}`}>
+            <line
+              x1={x1}
+              y1={centerY - 5}
+              x2={x2}
+              y2={centerY - 5}
+              stroke="#58a6ff"
+              strokeWidth="2"
+              markerEnd="url(#arrow_head)"
+            />
+            <line
+              x1={x2}
+              y1={centerY + 5}
+              x2={x1}
+              y2={centerY + 5}
+              stroke="#58a6ff"
+              strokeWidth="2"
+              markerEnd="url(#arrow_head)"
+            />
+          </g>
+        );
+      } else {
+        // Single directional arrow for Singly Linked List ->
+        lines.push(
+          <g key={`singly_link_${curr.id}_${next.id}`}>
+            <line
+              x1={x1}
+              y1={centerY}
+              x2={x2}
+              y2={centerY}
+              stroke="#58a6ff"
+              strokeWidth="2"
+              markerEnd="url(#arrow_head)"
+            />
+          </g>
+        );
+      }
     }
 
     // Render bypass curves (e.g. p->sau = q->sau)
