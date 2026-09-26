@@ -107,7 +107,7 @@ class LinkedListRenderer extends Renderer {
     const lastNodeIdx = nodes.length - 1;
     if (lastNodeIdx >= 0 && !nodes[lastNodeIdx].detached && !nodes[lastNodeIdx].fadingOut) {
       const x1 = startX + lastNodeIdx * totalNodeSlot + nodeWidth - 6;
-      const x2 = startX + (lastNodeIdx + 1) * totalNodeSlot - (nodeWidth - nullWidth) - gap + 4;
+      const x2 = startX + nodes.length * totalNodeSlot + 4;
       lines.push(
         <g key="right_null_link">
           <line

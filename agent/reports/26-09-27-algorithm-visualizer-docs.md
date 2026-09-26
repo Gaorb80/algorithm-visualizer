@@ -1,27 +1,22 @@
 ---
 date: 2026-09-27
 type: work-report
-topic: synchronize-null-nodes-and-arrows
+topic: fix-tail-null-arrow-pointing
 status: completed
 agent: antigravity
 ---
 
 # Task
 
-Đồng bộ kích thước, vị trí và hiển thị mũi tên kết nối cho các khối `NULL` ở cả hai đầu của Danh sách liên kết.
+Khắc phục tọa độ đường vẽ SVG để mũi tên kết nối từ nút cuối cùng trỏ thẳng và chuẩn xác vào khối `TAIL (NULL)`.
 
 ## Actions
 
-- **Chuẩn hóa khối `NULL`**:
-  - Cập nhật [`src/core/renderers/LinkedListRenderer/LinkedListRenderer.module.scss`](file:///E:/GitHub/algorithm-visualizer/src/core/renderers/LinkedListRenderer/LinkedListRenderer.module.scss):
-    - Khối `NULL` được bọc trong cấu trúc `.null_wrapper` với kích thước, header `HEAD`/`TAIL`, body `NULL`, footer `nullptr` đồng bộ 100% cùng đường đáy (baseline) với các thẻ `.node_card`.
-- **Mũi tên kết nối đến `NULL`**:
-  - Cập nhật [`src/core/renderers/LinkedListRenderer/index.js`](file:///E:/GitHub/algorithm-visualizer/src/core/renderers/LinkedListRenderer/index.js):
-    - Danh sách đôi: Vẽ mũi tên trỏ về `NULL` bên trái (`Node #1` $\to$ `NULL (HEAD)`).
-    - Cả danh sách đơn và đôi: Vẽ mũi tên trỏ vào `NULL` bên phải (`Node #last` $\to$ `NULL (TAIL)`).
-    - Khoảng cách giữa các nút và `NULL` được căn đều chính xác $36\text{px}$.
+- Cập nhật [`src/core/renderers/LinkedListRenderer/index.js`](file:///E:/GitHub/algorithm-visualizer/src/core/renderers/LinkedListRenderer/index.js):
+  - Sửa lại tọa độ đích `x2` của đường vẽ mũi tên đến khối `Right NULL` (`x2 = startX + nodes.length * totalNodeSlot + 4`).
+  - Mũi tên từ `Node #last` trỏ thẳng sang khối `TAIL (NULL)` với khoảng cách và đầu mũi tên rõ nét, đồng bộ hoàn toàn như các liên kết giữa các Node.
 
 ## Result
 
-- Giao diện danh sách liên kết hiển thị đối xứng, liền mạch, đồng bộ tuyệt đối về kích thước và con trỏ kết thúc.
-- Build thành công và đồng bộ lên `antigravity-working` cũng như cập nhật Pull Request #2.
+- Mũi tên trỏ vào khối `TAIL (NULL)` hiển thị rõ ràng, chuẩn xác và liền mạch trên cả Danh sách đơn và Danh sách đôi.
+- Đồng bộ lên nhánh `antigravity-working` và cập nhật Pull Request #2.
