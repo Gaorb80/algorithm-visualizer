@@ -1,32 +1,38 @@
 ---
 date: 2026-09-27
 type: work-report
-topic: algorithm-visualizer-docs
+topic: algorithm-visualizer-docs-and-dsa-simulation
 status: completed
 agent: antigravity
 ---
 
 # Task
 
-Nghiên cứu kiến trúc dự án `algorithm-visualizer`, tạo thư mục tài liệu `doc/` bằng tiếng Việt chi tiết, hướng dẫn quy trình vận hành và tùy biến phục vụ mục đích học tập/nghiên cứu cá nhân.
+1. Nghiên cứu kiến trúc dự án `algorithm-visualizer`, tạo thư mục tài liệu `doc/` bằng tiếng Việt chi tiết.
+2. Xây dựng và tích hợp trực tiếp kịch bản trực quan hóa các hàm xóa (`xoaDau`, `xoaCuoi`, `xoaViTriK`) của môn DSA (tham chiếu từ `00-Danh_Sach_1_chieu.cpp` và `02-Lien_Ket_Doi_Dap_An.cpp`).
+3. Tối ưu hóa hệ thống để chạy 100% Offline trên Node.js hiện đại (Node 24).
 
 ## Actions
 
-- Đã kiểm tra toàn bộ cấu trúc mã nguồn `algorithm-visualizer` (React 16, Redux, Ace Editor, Chart.js, Tracer & Renderer pipeline).
-- Tạo nhánh làm việc chuẩn quy trình `antigravity-working`.
-- Biên soạn bộ tài liệu toàn diện bằng tiếng Việt tại thư mục `doc/`:
-  - `doc/README.md`: Mục lục, giới thiệu tổng quan, hướng dẫn bắt đầu nhanh (Quick Start) và lưu ý vận hành cá nhân.
-  - `doc/architecture.md`: Sơ đồ kiến trúc Mermaid, luồng dữ liệu Event-Sourcing từ Code -> Tracer -> JSON Chunks -> Renderers, cấu trúc thư mục `src/`.
-  - `doc/tracer-api-guide.md`: Cẩm nang tra cứu Tracer API (`Array1D`, `Array2D`, `Graph`, `Chart`, `Log`, `Markdown`, `Scatter`) kèm ví dụ thực tế hoàn chỉnh thuật toán Bubble Sort.
-  - `doc/personal-workflow.md`: Hướng dẫn vận hành offline (Web Worker JS), proxy runner (C++/Java), quản lý bài tập qua GitHub Gist (Scratch Paper) và mẹo thiết kế trực quan.
-  - `doc/development-guide.md`: Hướng dẫn tương thích Node.js (Node 14/16 vs Node 18+ với `node-sass`/`sass`), danh sách script và kiến trúc Redux State.
+- **Tài liệu hóa**:
+  - `doc/README.md`, `doc/architecture.md`, `doc/tracer-api-guide.md`, `doc/personal-workflow.md`, `doc/development-guide.md`.
+- **Tối ưu tương thích Node 24**:
+  - Chuyển đổi `node-sass` sang `sass` (Dart Sass) và tạo script `scripts/setup-sass-shim.js` tích hợp vào `postinstall`.
+- **Mô phỏng DSA HDU**:
+  - Viết module kịch bản trực quan hóa danh sách liên kết đơn: [`src/files/dsa-hdu/singly-linked-list/code.js`](file:///E:/GitHub/algorithm-visualizer/src/files/dsa-hdu/singly-linked-list/code.js) & [`README.md`](file:///E:/GitHub/algorithm-visualizer/src/files/dsa-hdu/singly-linked-list/README.md).
+  - Viết module kịch bản trực quan hóa danh sách liên kết đôi: [`src/files/dsa-hdu/doubly-linked-list/code.js`](file:///E:/GitHub/algorithm-visualizer/src/files/dsa-hdu/doubly-linked-list/code.js) & [`README.md`](file:///E:/GitHub/algorithm-visualizer/src/files/dsa-hdu/doubly-linked-list/README.md).
+  - Tích hợp công cụ thực thi JavaScript offline trên client: [`src/core/tracers/clientTracerRunner.js`](file:///E:/GitHub/algorithm-visualizer/src/core/tracers/clientTracerRunner.js).
+  - Đăng ký danh mục bài học mới trong [`src/apis/index.js`](file:///E:/GitHub/algorithm-visualizer/src/apis/index.js) và [`src/files/index.js`](file:///E:/GitHub/algorithm-visualizer/src/files/index.js).
+- **Khởi chạy máy chủ**:
+  - Khởi động thành công máy chủ phát triển tại `http://localhost:3000` và mở trực tiếp trình duyệt cho người dùng xem hoạt ảnh.
 
 ## Result
 
-- 5 tệp tài liệu kỹ thuật chất lượng cao bằng tiếng Việt được thêm vào `doc/`.
-- Sẵn sàng khởi chạy và sử dụng cho mục đích cá nhân.
+- Người dùng có thể xem và tương tác ngay với animation của 3 hàm xóa trong cả danh sách liên kết đơn và đôi tại địa chỉ:
+  - `http://localhost:3000/dsa-linked-list/singly-linked-list-deletion`
+  - `http://localhost:3000/dsa-linked-list/doubly-linked-list-deletion`
+- Toàn bộ thay đổi được commit và đồng bộ lên nhánh `antigravity-working`.
 
 ## Notes
 
-- Chế độ JavaScript hoàn toàn có thể chạy offline mà không cần backend server nhờ Web Worker.
-- Đối với C++/Java, người dùng có thể cấu hình `package.json` proxy tạm sang `https://algorithm-visualizer.org` để tận dụng sandbox runner mà không cần cài đặt cụm Docker cục bộ.
+- Trình duyệt tự động biên dịch và tạo animation với `GraphTracer` và `LogTracer` qua `clientTracerRunner` mà không cần cài đặt backend Docker.
