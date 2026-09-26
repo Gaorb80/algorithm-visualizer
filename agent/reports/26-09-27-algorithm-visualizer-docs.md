@@ -1,28 +1,27 @@
 ---
 date: 2026-09-27
 type: work-report
-topic: human-crafted-linked-list-renderer
+topic: synchronize-null-nodes-and-arrows
 status: completed
 agent: antigravity
 ---
 
 # Task
 
-Xây dựng và nâng cấp bộ vẽ chuyên dụng **`LinkedListRenderer`** và **`LinkedListTracer`** theo tiêu chuẩn **Human Craftsmanship & Anti-AI-Slop**, bổ sung hệ thống mũi tên 2 chiều song song cho Danh sách liên kết đôi (`02-Lien_Ket_Doi_Dap_An.cpp`).
+Đồng bộ kích thước, vị trí và hiển thị mũi tên kết nối cho các khối `NULL` ở cả hai đầu của Danh sách liên kết.
 
 ## Actions
 
-- **Nâng cấp liên kết 2 chiều (`isDoubly`)**:
+- **Chuẩn hóa khối `NULL`**:
+  - Cập nhật [`src/core/renderers/LinkedListRenderer/LinkedListRenderer.module.scss`](file:///E:/GitHub/algorithm-visualizer/src/core/renderers/LinkedListRenderer/LinkedListRenderer.module.scss):
+    - Khối `NULL` được bọc trong cấu trúc `.null_wrapper` với kích thước, header `HEAD`/`TAIL`, body `NULL`, footer `nullptr` đồng bộ 100% cùng đường đáy (baseline) với các thẻ `.node_card`.
+- **Mũi tên kết nối đến `NULL`**:
   - Cập nhật [`src/core/renderers/LinkedListRenderer/index.js`](file:///E:/GitHub/algorithm-visualizer/src/core/renderers/LinkedListRenderer/index.js):
-    - Đối với Danh sách đôi (`isDoubly = true`): Vẽ 2 đường mũi tên song song rõ rệt (Đường trên $\to$ theo chiều `sau`, Đường dưới $\leftarrow$ theo chiều `truoc`).
-    - Đối với Danh sách đơn (`isDoubly = false`): Giữ 1 đường mũi tên $\to$ ở giữa.
-- **Hệ thống Visualizer Human-Craft**:
-  - Cấu trúc node 2/3 ngăn chuẩn bộ nhớ C++ `[ Data | Next ]` / `[ Prev | Data | Next ]`.
-  - Hiển thị địa chỉ ô nhớ Hex (`0x20A0`) và thẻ con trỏ `L.dau`, `L.cuoi`, `p`, `q`.
-  - Mũi tên cong SVG Bezier uốn lượn khi bắc cầu `p->sau = q->sau` và `p->sau->truoc = p->truoc`.
-  - Nút bị cô lập hạ thấp $32\text{px}$ với viền nét đứt trước khi giải phóng `delete p`.
+    - Danh sách đôi: Vẽ mũi tên trỏ về `NULL` bên trái (`Node #1` $\to$ `NULL (HEAD)`).
+    - Cả danh sách đơn và đôi: Vẽ mũi tên trỏ vào `NULL` bên phải (`Node #last` $\to$ `NULL (TAIL)`).
+    - Khoảng cách giữa các nút và `NULL` được căn đều chính xác $36\text{px}$.
 
 ## Result
 
-- Danh sách liên kết đôi đã hiển thị chuẩn xác 100% hai chiều mũi tên xuôi/ngược song song.
-- Đã build thành công và đồng bộ lên nhánh `antigravity-working` cũng như cập nhật Pull Request #2.
+- Giao diện danh sách liên kết hiển thị đối xứng, liền mạch, đồng bộ tuyệt đối về kích thước và con trỏ kết thúc.
+- Build thành công và đồng bộ lên `antigravity-working` cũng như cập nhật Pull Request #2.

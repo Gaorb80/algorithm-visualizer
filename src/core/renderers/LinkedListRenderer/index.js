@@ -23,14 +23,34 @@ class LinkedListRenderer extends Renderer {
     if (!nodes.length) return null;
 
     const nodeWidth = 108;
+    const nullWidth = 64;
     const gap = 36;
     const totalNodeSlot = nodeWidth + gap;
-    const startX = 20;
+    const startX = isDoubly ? 20 + nullWidth + gap : 20;
     const centerY = 50 + 38 / 2 + 38 + 6; // pointer height (38) + margin (6) + padding top (50) + half node body (19)
 
     const lines = [];
 
-    // Render direct links between consecutive non-detached nodes
+    // 1. In Doubly Linked list: Arrow between Left NULL and first node
+    if (isDoubly && nodes.length > 0 && !nodes[0].detached && !nodes[0].fadingOut) {
+      const x1 = startX + 4;
+      const x2 = 20 + nullWidth - 4;
+      lines.push(
+        <g key="left_null_link">
+          <line
+            x1={x1}
+            y1={centerY}
+            x2={x2}
+            y2={centerY}
+            stroke="#58a6ff"
+            strokeWidth="2"
+            markerEnd="url(#arrow_head)"
+          />
+        </g>
+      );
+    }
+
+    // 2. Render direct links between consecutive non-detached nodes
     for (let i = 0; i < nodes.length - 1; i++) {
       const curr = nodes[i];
       const next = nodes[i + 1];
@@ -83,7 +103,27 @@ class LinkedListRenderer extends Renderer {
       }
     }
 
-    // Render bypass curves (e.g. p->sau = q->sau)
+    // 3. Arrow from last node to Right NULL
+    const lastNodeIdx = nodes.length - 1;
+    if (lastNodeIdx >= 0 && !nodes[lastNodeIdx].detached && !nodes[lastNodeIdx].fadingOut) {
+      const x1 = startX + lastNodeIdx * totalNodeSlot + nodeWidth - 6;
+      const x2 = startX + (lastNodeIdx + 1) * totalNodeSlot - (nodeWidth - nullWidth) - gap + 4;
+      lines.push(
+        <g key="right_null_link">
+          <line
+            x1={x1}
+            y1={centerY}
+            x2={x2}
+            y2={centerY}
+            stroke="#58a6ff"
+            strokeWidth="2"
+            markerEnd="url(#arrow_head)"
+          />
+        </g>
+      );
+    }
+
+    // 4. Render bypass curves (e.g. p->sau = q->sau)
     if (bypass && bypass.fromId && bypass.toId) {
       const fromIdx = nodes.findIndex(n => n.id === bypass.fromId);
       const toIdx = nodes.findIndex(n => n.id === bypass.toId);
@@ -117,7 +157,7 @@ class LinkedListRenderer extends Renderer {
       }
     }
 
-    // Render backward bypass curves for doubly linked list
+    // 5. Render backward bypass curves for doubly linked list
     if (prevBypass && prevBypass.fromId && prevBypass.toId) {
       const fromIdx = nodes.findIndex(n => n.id === prevBypass.fromId);
       const toIdx = nodes.findIndex(n => n.id === prevBypass.toId);
@@ -187,6 +227,18 @@ class LinkedListRenderer extends Renderer {
         <div className={styles.stage_wrapper}>
           {this.renderSvgLinks()}
           <div className={styles.nodes_row}>
+            {/* Symmetrical Left NULL for Doubly Linked List */}
+            {isDoubly && (
+              <div className={styles.null_wrapper}>
+                <div className={styles.null_top_spacer} />
+                <div className={styles.null_card}>
+                  <div className={styles.null_card_header}>HEAD</div>
+                  <div className={styles.null_card_body}>NULL</div>
+                </div>
+                <div className={styles.null_card_footer}>nullptr</div>
+              </div>
+            )}
+
             {nodes.map((node, index) => {
               const nodePointers = pointersByNode[node.id] || [];
               const isDetached = node.detached;
@@ -249,8 +301,15 @@ class LinkedListRenderer extends Renderer {
                 </div>
               );
             })}
-            <div className={styles.null_terminator}>
-              <span>NULL</span>
+
+            {/* Symmetrical Right NULL */}
+            <div className={styles.null_wrapper}>
+              <div className={styles.null_top_spacer} />
+              <div className={styles.null_card}>
+                <div className={styles.null_card_header}>TAIL</div>
+                <div className={styles.null_card_body}>NULL</div>
+              </div>
+              <div className={styles.null_card_footer}>nullptr</div>
             </div>
           </div>
         </div>
@@ -260,3 +319,4 @@ class LinkedListRenderer extends Renderer {
 }
 
 export default LinkedListRenderer;
+
